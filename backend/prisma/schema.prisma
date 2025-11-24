@@ -9,6 +9,40 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Book {
+  id        Int       @id @default(autoincrement())
+  title     String
+  summary   String
+  ISBN      String    @unique
+  url       String    @unique
+
+  authorId  Int
+  author    Author    @relation(fields: [authorId], references: [id])
+
+  genres    Genre[]   @relation("BookGenres")
+}
+
+model Author {
+  id           Int      @id @default(autoincrement())
+  first_name   String
+  family_name  String
+  date_of_birth DateTime
+  date_of_death DateTime?
+  name         String
+  lifespan     String
+  url          String    @unique
+
+  books        Book[]
+}
+
+model Genre {
+  id    Int     @id @default(autoincrement())
+  name  String
+  url   String  @unique
+
+  books Book[]  @relation("BookGenres")
 }
