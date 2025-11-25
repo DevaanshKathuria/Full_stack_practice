@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,35 +8,40 @@ datasource db {
 }
 
 model Book {
-  id        Int       @id @default(autoincrement())
-  title     String
-  summary   String
-  ISBN      String    @unique
-  url       String    @unique
-
-  authorId  Int
-  author    Author    @relation(fields: [authorId], references: [id])
-
-  genres    Genre[]   @relation("BookGenres")
+  id       Int                @id @default(autoincrement())
+  title    String
+  summary  String
+  isbn     String
+  url      String
+  author   Author             @relation(fields: [authorId], references: [id])
+  authorId Int
+  genres   BookGenreMapping[]
 }
 
 model Author {
-  id           Int      @id @default(autoincrement())
-  first_name   String
-  family_name  String
+  id            Int       @id @default(autoincrement())
+  first_name    String
+  family_name   String
   date_of_birth DateTime
   date_of_death DateTime?
-  name         String
-  lifespan     String
-  url          String    @unique
-
-  books        Book[]
+  name          String
+  lifeSpan      String?
+  url           String
+  books         Book[]
 }
 
 model Genre {
-  id    Int     @id @default(autoincrement())
+  id    Int                @id @default(autoincrement())
   name  String
-  url   String  @unique
+  url   String
+  books BookGenreMapping[]
+}
 
-  books Book[]  @relation("BookGenres")
+model BookGenreMapping {
+  book    Book  @relation(fields: [bookId], references: [id])
+  bookId  Int
+  genre   Genre @relation(fields: [genreId], references: [id])
+  genreId Int
+
+  @@id([bookId, genreId])
 }
